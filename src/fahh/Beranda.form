@@ -26,6 +26,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Data Pembeli"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="DataPembeliButtonActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="DataPaketButton">
               <Properties>
@@ -47,11 +50,17 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Data Kredit"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="DataKreditActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="DataBayarCicilan">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Data Bayar Cicilan"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="DataBayarCicilanActionPerformed"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>

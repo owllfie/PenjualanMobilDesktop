@@ -67,6 +67,11 @@ public class Beranda extends javax.swing.JFrame {
         DataButton.add(DataMobilButton);
 
         DataPembeliButton.setText("Data Pembeli");
+        DataPembeliButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DataPembeliButtonActionPerformed(evt);
+            }
+        });
         DataButton.add(DataPembeliButton);
 
         DataPaketButton.setText("Data Paket");
@@ -86,9 +91,19 @@ public class Beranda extends javax.swing.JFrame {
         DataButton.add(DataBayarCashButton);
 
         DataKredit.setText("Data Kredit");
+        DataKredit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DataKreditActionPerformed(evt);
+            }
+        });
         DataButton.add(DataKredit);
 
         DataBayarCicilan.setText("Data Bayar Cicilan");
+        DataBayarCicilan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DataBayarCicilanActionPerformed(evt);
+            }
+        });
         DataButton.add(DataBayarCicilan);
 
         jMenuBar2.add(DataButton);
@@ -128,10 +143,14 @@ public class Beranda extends javax.swing.JFrame {
 
     private void DataMobilButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DataMobilButtonActionPerformed
         // TODO add your handling code here:
+        new MenuDataMobil().show();
+        this.dispose();
     }//GEN-LAST:event_DataMobilButtonActionPerformed
 
     private void DataBayarCashButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DataBayarCashButtonActionPerformed
         // TODO add your handling code here:
+        new MenuDataBeliCash().show();
+        this.dispose();
     }//GEN-LAST:event_DataBayarCashButtonActionPerformed
 
     private void PenjualanCashButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PenjualanCashButtonActionPerformed
@@ -148,7 +167,27 @@ public class Beranda extends javax.swing.JFrame {
 
     private void DataPaketButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DataPaketButtonActionPerformed
         // TODO add your handling code here:
+        new MenuDataPaket().show();
+        this.dispose();
     }//GEN-LAST:event_DataPaketButtonActionPerformed
+
+    private void DataPembeliButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DataPembeliButtonActionPerformed
+        // TODO add your handling code here:
+        new MenuDataPembeli().show();
+        this.dispose();
+    }//GEN-LAST:event_DataPembeliButtonActionPerformed
+
+    private void DataKreditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DataKreditActionPerformed
+        // TODO add your handling code here:
+        new MenuDataBeliKredit().show();
+        this.dispose();
+    }//GEN-LAST:event_DataKreditActionPerformed
+
+    private void DataBayarCicilanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DataBayarCicilanActionPerformed
+        // TODO add your handling code here:
+        new MenuDataBayarCicilan().show();
+        this.dispose();
+    }//GEN-LAST:event_DataBayarCicilanActionPerformed
 
     /**
      * @param args the command line arguments

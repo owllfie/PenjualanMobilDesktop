@@ -15,6 +15,8 @@ public class Showroom {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        Koneksi a=new Koneksi();
+        a.connect();
     }
     
 }
