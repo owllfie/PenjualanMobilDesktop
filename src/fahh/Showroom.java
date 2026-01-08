@@ -17,6 +17,12 @@ public class Showroom {
         // TODO code application logic here
         Koneksi a=new Koneksi();
         a.connect();
+        
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Beranda().setVisible(true);
+            }
+        });
     }
     
 }

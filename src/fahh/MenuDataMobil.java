@@ -3,18 +3,68 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package fahh;
-
+import java.sql.*;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author User
  */
 public class MenuDataMobil extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Beranda
-     */
+    private DefaultTableModel model=null;
+    private PreparedStatement stat;
+    private ResultSet rs;
+    Koneksi k = new Koneksi();
     public MenuDataMobil() {
         initComponents();
+        k.connect();
+        ShowTable();
+    }
+    
+    class mobil extends MenuDataMobil{
+        String kode, merk, type, warna;
+        int harga;  
+        
+        public mobil(){
+            this.kode=KodeMobil.getText();
+            this.merk=Merk.getText();
+            this.type=TipeMobil.getText();
+            this.warna=WarnaMobil.getText();
+            this.harga=Integer.parseInt(HargaMobil.getText());
+        }
+    }
+    
+    public void ShowTable(){
+        model=new DefaultTableModel();
+        model.addColumn("Kode");
+        model.addColumn("Merk");
+        model.addColumn("Tipe");
+        model.addColumn("Warna");
+        model.addColumn("Harga");
+        TabelMobil.setModel(model);
+        
+        try{
+            this.stat=k.getCon().prepareStatement("select * from mobil");
+            this.rs=this.stat.executeQuery();
+            while(rs.next()){
+                Object[] data={
+                    rs.getString(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    rs.getString(4),
+                    rs.getInt(5)
+                };
+                model.addRow(data);
+            }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+        KodeMobil.setText("");
+        Merk.setText("");
+        TipeMobil.setText("");
+        WarnaMobil.setText("");
+        HargaMobil.setText("");
     }
 
     /**
@@ -139,6 +189,11 @@ public class MenuDataMobil extends javax.swing.JFrame {
         TambahButton.setBackground(new java.awt.Color(51, 51, 255));
         TambahButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         TambahButton.setText("Tambah");
+        TambahButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TambahButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(TambahButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, -1, -1));
 
         EditButton.setBackground(new java.awt.Color(51, 51, 255));
@@ -174,6 +229,23 @@ public class MenuDataMobil extends javax.swing.JFrame {
         new Beranda().show();
         this.dispose();
     }//GEN-LAST:event_KembaliButtonMouseClicked
+
+    private void TambahButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TambahButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            mobil m=new mobil();
+            this.stat=k.getCon().prepareStatement("insert into mobil values(?, ?, ? ,? ,?)");
+            stat.setString(1, m.kode);
+            stat.setString(2, m.merk);
+            stat.setString(3, m.type);
+            stat.setString(4, m.warna);
+            stat.setInt(5, m.harga);
+            stat.executeUpdate();
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_TambahButtonMouseClicked
 
     /**
      * @param args the command line arguments
