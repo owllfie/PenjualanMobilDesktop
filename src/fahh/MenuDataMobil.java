@@ -172,6 +172,11 @@ public class MenuDataMobil extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        TabelMobil.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TabelMobilMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(TabelMobil);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 950, -1));
@@ -199,6 +204,11 @@ public class MenuDataMobil extends javax.swing.JFrame {
         EditButton.setBackground(new java.awt.Color(51, 51, 255));
         EditButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         EditButton.setText("Edit");
+        EditButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                EditButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(EditButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 310, -1, -1));
 
         pack();
@@ -246,6 +256,32 @@ public class MenuDataMobil extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
     }//GEN-LAST:event_TambahButtonMouseClicked
+
+    private void TabelMobilMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TabelMobilMouseClicked
+        // TODO add your handling code here:
+        KodeMobil.setText(model.getValueAt(TabelMobil.getSelectedRow(), 0).toString());
+        Merk.setText(model.getValueAt(TabelMobil.getSelectedRow(), 1).toString());
+        TipeMobil.setText(model.getValueAt(TabelMobil.getSelectedRow(), 2).toString());
+        WarnaMobil.setText(model.getValueAt(TabelMobil.getSelectedRow(), 3).toString());
+        HargaMobil.setText(model.getValueAt(TabelMobil.getSelectedRow(), 4).toString());
+    }//GEN-LAST:event_TabelMobilMouseClicked
+
+    private void EditButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EditButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            mobil m=new mobil();
+            this.stat=k.getCon().prepareStatement("update mobil set merk=?,");
+            stat.setString(1, m.kode);
+            stat.setString(2, m.merk);
+            stat.setString(3, m.type);
+            stat.setString(4, m.warna);
+            stat.setInt(5, m.harga);
+            stat.executeUpdate();
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_EditButtonMouseClicked
 
     /**
      * @param args the command line arguments
