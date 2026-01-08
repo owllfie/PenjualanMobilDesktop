@@ -104,6 +104,11 @@ public class MenuDataMobil extends javax.swing.JFrame {
         HapusButton.setBackground(new java.awt.Color(51, 51, 255));
         HapusButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         HapusButton.setText("Hapus");
+        HapusButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                HapusButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(HapusButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 310, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -270,18 +275,31 @@ public class MenuDataMobil extends javax.swing.JFrame {
         // TODO add your handling code here:
         try{
             mobil m=new mobil();
-            this.stat=k.getCon().prepareStatement("update mobil set merk=?,");
-            stat.setString(1, m.kode);
-            stat.setString(2, m.merk);
-            stat.setString(3, m.type);
-            stat.setString(4, m.warna);
-            stat.setInt(5, m.harga);
+            this.stat=k.getCon().prepareStatement("update mobil set merk=?,"+"type=?,warna=?,harga=? where kode_mobil=?");
+            stat.setString(1, m.merk);
+            stat.setString(2, m.type);
+            stat.setString(3, m.warna);
+            stat.setInt(4, m.harga);
+            stat.setString(5, KodeMobil.getText());
             stat.executeUpdate();
             ShowTable();
         }catch(Exception e){
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
     }//GEN-LAST:event_EditButtonMouseClicked
+
+    private void HapusButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_HapusButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            mobil m=new mobil();
+            this.stat=k.getCon().prepareStatement("delete from mobil where kode_mobil=?");
+            stat.setString(1, KodeMobil.getText());
+            stat.executeUpdate();
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_HapusButtonMouseClicked
 
     /**
      * @param args the command line arguments
