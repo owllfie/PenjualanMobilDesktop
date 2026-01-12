@@ -3,6 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package fahh;
+import java.sql.*;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -13,8 +16,55 @@ public class MenuDataPaket extends javax.swing.JFrame {
     /**
      * Creates new form Beranda
      */
+    
+    private DefaultTableModel model=null;
+    private PreparedStatement stat;
+    private ResultSet rs;
+    Koneksi k = new Koneksi();
     public MenuDataPaket() {
         initComponents();
+        k.connect();
+        ShowTable();
+    }
+    
+    class paket extends MenuDataPaket{
+        String kode, dp, tenor, bunga; 
+        
+        public paket(){
+            this.kode=KodePaket.getText();
+            this.dp=DP.getText();
+            this.tenor=LamaTenor.getText();
+            this.bunga=Bunga.getText();
+        }
+    }
+    
+    public void ShowTable(){
+        model=new DefaultTableModel();
+        model.addColumn("Kode");
+        model.addColumn("DP");
+        model.addColumn("Tenor");
+        model.addColumn("Bunga");
+        TabelPaket.setModel(model);
+        
+        try{
+            this.stat=k.getCon().prepareStatement("select * from paket");
+            this.rs=this.stat.executeQuery();
+            while(rs.next()){
+                Object[] data={
+                    rs.getString(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    rs.getString(4)
+                };
+                model.addRow(data);
+            }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+        KodePaket.setText("");
+        DP.setText("");
+        LamaTenor.setText("");
+        Bunga.setText("");
     }
 
     /**
@@ -52,6 +102,11 @@ public class MenuDataPaket extends javax.swing.JFrame {
         HapusButton.setBackground(new java.awt.Color(51, 51, 255));
         HapusButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         HapusButton.setText("Hapus");
+        HapusButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                HapusButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(HapusButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 310, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -109,6 +164,11 @@ public class MenuDataPaket extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        TabelPaket.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TabelPaketMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(TabelPaket);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 950, -1));
@@ -126,11 +186,21 @@ public class MenuDataPaket extends javax.swing.JFrame {
         TambahButton.setBackground(new java.awt.Color(51, 51, 255));
         TambahButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         TambahButton.setText("Tambah");
+        TambahButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TambahButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(TambahButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, -1, -1));
 
         EditButton.setBackground(new java.awt.Color(51, 51, 255));
         EditButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         EditButton.setText("Edit");
+        EditButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                EditButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(EditButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 310, -1, -1));
 
         pack();
@@ -157,6 +227,59 @@ public class MenuDataPaket extends javax.swing.JFrame {
         new Beranda().show();
         this.dispose();
     }//GEN-LAST:event_KembaliButtonMouseClicked
+
+    private void TambahButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TambahButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            paket m=new paket();
+            this.stat=k.getCon().prepareStatement("insert into paket values(?, ?, ? ,?)");
+            stat.setString(1, m.kode);
+            stat.setString(2, m.dp);
+            stat.setString(3, m.tenor);
+            stat.setString(4, m.bunga);
+            stat.executeUpdate();
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_TambahButtonMouseClicked
+
+    private void TabelPaketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TabelPaketMouseClicked
+        // TODO add your handling code here:
+        KodePaket.setText(model.getValueAt(TabelPaket.getSelectedRow(), 0).toString());
+        DP.setText(model.getValueAt(TabelPaket.getSelectedRow(), 1).toString());
+        LamaTenor.setText(model.getValueAt(TabelPaket.getSelectedRow(), 2).toString());
+        Bunga.setText(model.getValueAt(TabelPaket.getSelectedRow(), 3).toString());
+    }//GEN-LAST:event_TabelPaketMouseClicked
+
+    private void EditButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EditButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            paket m=new paket();
+            this.stat=k.getCon().prepareStatement("update paket set uang_muka=?,"+"tenor=?,bunga_cicilan=? where kode_paket=?");
+            stat.setString(1, m.dp);
+            stat.setString(2, m.tenor);
+            stat.setString(3, m.bunga);
+            stat.setString(4, KodePaket.getText());
+            stat.executeUpdate();
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_EditButtonMouseClicked
+
+    private void HapusButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_HapusButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            paket m=new paket();
+            this.stat=k.getCon().prepareStatement("delete from paket where kode_paket=?");
+            stat.setString(1, KodePaket.getText());
+            stat.executeUpdate();
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_HapusButtonMouseClicked
 
     /**
      * @param args the command line arguments

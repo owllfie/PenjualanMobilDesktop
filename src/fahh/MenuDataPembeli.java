@@ -3,6 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package fahh;
+import java.sql.*;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -13,8 +16,54 @@ public class MenuDataPembeli extends javax.swing.JFrame {
     /**
      * Creates new form Beranda
      */
+    private DefaultTableModel model=null;
+    private PreparedStatement stat;
+    private ResultSet rs;
+    Koneksi k = new Koneksi();
     public MenuDataPembeli() {
         initComponents();
+        k.connect();
+        ShowTable();
+    }
+    
+    class pembeli extends MenuDataPembeli{
+        String ktp, nama, alamat, nohp; 
+        
+        public pembeli(){
+            this.ktp=NoKTP.getText();
+            this.nama=NamaPembeli.getText();
+            this.alamat=AlamatPembeli.getText();
+            this.nohp=NoHP.getText();
+        }
+    }
+    
+    public void ShowTable(){
+        model=new DefaultTableModel();
+        model.addColumn("KTP");
+        model.addColumn("Nama");
+        model.addColumn("Alamat");
+        model.addColumn("No HP");
+        TabelPembeli.setModel(model);
+        
+        try{
+            this.stat=k.getCon().prepareStatement("select * from pembeli");
+            this.rs=this.stat.executeQuery();
+            while(rs.next()){
+                Object[] data={
+                    rs.getString(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    rs.getString(4)
+                };
+                model.addRow(data);
+            }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+        NoKTP.setText("");
+        NamaPembeli.setText("");
+        AlamatPembeli.setText("");
+        NoHP.setText("");
     }
 
     /**
@@ -52,6 +101,11 @@ public class MenuDataPembeli extends javax.swing.JFrame {
         HapusButton.setBackground(new java.awt.Color(51, 51, 255));
         HapusButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         HapusButton.setText("Hapus");
+        HapusButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                HapusButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(HapusButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 310, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -109,6 +163,11 @@ public class MenuDataPembeli extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        TabelPembeli.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TabelPembeliMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(TabelPembeli);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 950, -1));
@@ -126,11 +185,21 @@ public class MenuDataPembeli extends javax.swing.JFrame {
         TambahButton.setBackground(new java.awt.Color(51, 51, 255));
         TambahButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         TambahButton.setText("Tambah");
+        TambahButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TambahButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(TambahButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, -1, -1));
 
         EditButton.setBackground(new java.awt.Color(51, 51, 255));
         EditButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         EditButton.setText("Edit");
+        EditButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                EditButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(EditButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 310, -1, -1));
 
         pack();
@@ -157,6 +226,59 @@ public class MenuDataPembeli extends javax.swing.JFrame {
         new Beranda().show();
         this.dispose();
     }//GEN-LAST:event_KembaliButtonMouseClicked
+
+    private void TambahButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TambahButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            pembeli m=new pembeli();
+            this.stat=k.getCon().prepareStatement("insert into pembeli values(?, ?, ? ,?)");
+            stat.setString(1, m.ktp);
+            stat.setString(2, m.nama);
+            stat.setString(3, m.alamat);
+            stat.setString(4, m.nohp);
+            stat.executeUpdate();
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_TambahButtonMouseClicked
+
+    private void TabelPembeliMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TabelPembeliMouseClicked
+        // TODO add your handling code here:
+        NoKTP.setText(model.getValueAt(TabelPembeli.getSelectedRow(), 0).toString());
+        NamaPembeli.setText(model.getValueAt(TabelPembeli.getSelectedRow(), 1).toString());
+        AlamatPembeli.setText(model.getValueAt(TabelPembeli.getSelectedRow(), 2).toString());
+        NoHP.setText(model.getValueAt(TabelPembeli.getSelectedRow(), 3).toString());
+    }//GEN-LAST:event_TabelPembeliMouseClicked
+
+    private void EditButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EditButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            pembeli m=new pembeli();
+            this.stat=k.getCon().prepareStatement("update pembeli set nama_pembeli=?,"+"alamat_pembeli=?,telp_pembeli=? where ktp=?");
+            stat.setString(1, m.nama);
+            stat.setString(2, m.alamat);
+            stat.setString(3, m.nohp);
+            stat.setString(4, NoKTP.getText());
+            stat.executeUpdate();
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_EditButtonMouseClicked
+
+    private void HapusButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_HapusButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            pembeli m=new pembeli();
+            this.stat=k.getCon().prepareStatement("delete from pembeli where ktp=?");
+            stat.setString(1, NoKTP.getText());
+            stat.executeUpdate();
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_HapusButtonMouseClicked
 
     /**
      * @param args the command line arguments
