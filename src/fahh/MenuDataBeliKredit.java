@@ -3,6 +3,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package fahh;
+import java.sql.*;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -13,8 +21,81 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
     /**
      * Creates new form Beranda
      */
+    private DefaultTableModel model=null;
+    private PreparedStatement stat;
+    private ResultSet rs;
+    Koneksi k = new Koneksi();
     public MenuDataBeliKredit() {
         initComponents();
+        k.connect();
+        ShowTable();
+        ComboMobil();
+        ComboPembeli();
+    }
+    
+    class kredit extends MenuDataBeliCash{
+        String kode, ktp, mobil, paket, tanggal; 
+        int cicilan, tenor, total;
+        public kredit(){
+        this.kode=IDBeli.getText();
+        String combo1=KTPPembeli.getSelectedItem().toString();
+        this.ktp=combo1.split(":")[0];
+        
+        String combo2=KodeMobil.getSelectedItem().toString();
+        String [] arr1=combo2.split(":");
+        this.mobil=arr1[0];
+        int harga=Integer.parseInt(arr1[4]);
+        
+        String combo3=PaketKredit.getSelectedItem().toString();
+        String [] arr2=combo3.split(":");
+        this.paket=arr2[0];
+        int uangmuka=Integer.parseInt(arr2[1]);
+        int tenor=Integer.parseInt(arr2[2]);
+        int bunga=Integer.parseInt(arr2[3]);
+        
+        int dp=harga-uangmuka/100;
+        int pinjaman=harga-dp;
+        int total=pinjaman-(pinjaman*bunga*tenor/12)/100;
+        int cicilan=total/tenor;
+        
+        this.cicilan=cicilan;
+        this.tenor=tenor;
+        this.total=total;
+        
+        try{
+            Date date = TanggalPembelian.getDate();
+            DateFormat dateformat=new SimpleDateFormat("yyyy-MM-dd");
+            this.tanggal=dateformat.format(date);
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Tanggal Harus dimasukkan"+e.getMessage());
+        }
+    }
+        public void ShowTable(){
+        model=new DefaultTableModel();
+        model.addColumn("Kode");
+        model.addColumn("KTP");
+        model.addColumn("Mobil");
+        model.addColumn("Tanggal");
+        model.addColumn("Total");
+        TabelKredit.setModel(model);
+        
+        try{
+            this.stat=k.getCon().prepareStatement("select * from beli_cash");
+            this.rs=this.stat.executeQuery();
+            while(rs.next()){
+                Object[] data={
+                    rs.getString(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    rs.getString(4),
+                    rs.getInt(5)
+                };
+                model.addRow(data);
+            }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+        Bayar.setText("");
     }
 
     /**
