@@ -31,6 +31,7 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         ShowTable();
         ComboMobil();
         ComboPembeli();
+        ComboPaket();
     }
     
     class kredit extends MenuDataBeliCash{
@@ -49,18 +50,16 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         String combo3=PaketKredit.getSelectedItem().toString();
         String [] arr2=combo3.split(":");
         this.paket=arr2[0];
-        int uangmuka=Integer.parseInt(arr2[1]);
-        int tenor=Integer.parseInt(arr2[2]);
-        int bunga=Integer.parseInt(arr2[3]);
+        double uangmuka=Double.parseDouble(arr2[1]);
+        double tenor=Double.parseDouble(arr2[2]);
+        double bunga=Double.parseDouble(arr2[3]);
         
-        int dp=harga-uangmuka/100;
-        int pinjaman=harga-dp;
-        int total=pinjaman-(pinjaman*bunga*tenor/12)/100;
-        int cicilan=total/tenor;
+        double dp=harga*uangmuka/100;
+        double pinjaman=harga-dp;
+        this.total=(int)(pinjaman-(pinjaman*bunga*tenor/12)/100);
+        this.cicilan=(int)(this.total/tenor);
         
-        this.cicilan=cicilan;
-        this.tenor=tenor;
-        this.total=total;
+        this.tenor=(int)tenor;
         
         try{
             Date date = TanggalPembelian.getDate();
@@ -69,18 +68,22 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Tanggal Harus dimasukkan"+e.getMessage());
         }
+        }
     }
         public void ShowTable(){
         model=new DefaultTableModel();
         model.addColumn("Kode");
         model.addColumn("KTP");
+        model.addColumn("Paket");
         model.addColumn("Mobil");
         model.addColumn("Tanggal");
+        model.addColumn("Bayar");
+        model.addColumn("Tenor");
         model.addColumn("Total");
         TabelKredit.setModel(model);
         
         try{
-            this.stat=k.getCon().prepareStatement("select * from beli_cash");
+            this.stat=k.getCon().prepareStatement("select * from kredit");
             this.rs=this.stat.executeQuery();
             while(rs.next()){
                 Object[] data={
@@ -88,15 +91,62 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
                     rs.getString(2),
                     rs.getString(3),
                     rs.getString(4),
-                    rs.getInt(5)
+                    rs.getString(5),
+                    rs.getInt(6),
+                    rs.getInt(7),
+                    rs.getInt(8)
                 };
                 model.addRow(data);
             }
         }catch(Exception e){
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
-        Bayar.setText("");
+        IDBeli.setText("");
     }
+        public void ComboMobil(){
+    try{
+            this.stat=k.getCon().prepareStatement("select * from mobil");
+            this.rs=this.stat.executeQuery();
+            while(rs.next()){
+                    KodeMobil.addItem(rs.getString("kode_mobil")+":"
+                    +rs.getString("merk")+":"
+                    +rs.getString("type")+":"
+                    +rs.getString("warna")+":"
+                    +rs.getInt("harga")+":"
+                    );
+            }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+}
+    public void ComboPembeli(){
+    try{
+            this.stat=k.getCon().prepareStatement("select * from pembeli");
+            this.rs=this.stat.executeQuery();
+            while(rs.next()){
+                    KTPPembeli.addItem(rs.getString("ktp")+":"
+                    +rs.getString("nama_pembeli")
+                    );
+            }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+}
+    public void ComboPaket(){
+    try{
+            this.stat=k.getCon().prepareStatement("select * from paket");
+            this.rs=this.stat.executeQuery();
+            while(rs.next()){
+                    PaketKredit.addItem(rs.getString("kode_paket")+":"
+                    +rs.getInt("uang_muka")+":"
+                    +rs.getInt("tenor")+":"
+                    +rs.getInt("bunga_cicilan")
+                    );
+            }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -137,6 +187,11 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         HapusButton.setBackground(new java.awt.Color(51, 51, 255));
         HapusButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         HapusButton.setText("Hapus");
+        HapusButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                HapusButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(HapusButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 310, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -177,6 +232,11 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        TabelKredit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TabelKreditMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(TabelKredit);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 950, -1));
@@ -194,14 +254,23 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         TambahButton.setBackground(new java.awt.Color(51, 51, 255));
         TambahButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         TambahButton.setText("Tambah");
+        TambahButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TambahButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(TambahButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, -1, -1));
 
         EditButton.setBackground(new java.awt.Color(51, 51, 255));
         EditButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         EditButton.setText("Edit");
+        EditButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                EditButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(EditButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 310, -1, -1));
 
-        PaketKredit.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         getContentPane().add(PaketKredit, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 200, 570, -1));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -215,10 +284,8 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         });
         getContentPane().add(Bayar, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 260, 570, -1));
 
-        KTPPembeli.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         getContentPane().add(KTPPembeli, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 140, 570, -1));
 
-        KodeMobil.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         getContentPane().add(KodeMobil, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 170, 570, -1));
         getContentPane().add(TanggalPembelian, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 230, 570, -1));
 
@@ -238,6 +305,97 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         new Beranda().show();
         this.dispose();
     }//GEN-LAST:event_KembaliButtonMouseClicked
+
+    private void TambahButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TambahButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            kredit c= new kredit();
+            this.stat=k.getCon().prepareStatement("insert into kredit values(?,?,?,?,?,?,?,?)");
+            stat.setString(1, c.kode);
+            stat.setString(2, c.ktp);
+            stat.setString(3, c.mobil);
+            stat.setString(4, c.paket);
+            stat.setString(5, c.tanggal);
+            stat.setInt(6, c.cicilan);
+            stat.setInt(7, c.tenor);
+            stat.setInt(8, c.total);
+            stat.executeUpdate();
+            JOptionPane.showMessageDialog(null, "cicilan perbulannya= RP."+c.cicilan+"\ntenornya sebanyak"+c.tenor+"\ntotal cicilannya sebanyak= RP. "+c.total);
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_TambahButtonMouseClicked
+
+    private void TabelKreditMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TabelKreditMouseClicked
+        // TODO add your handling code here:
+        int row=TabelKredit.getSelectedRow();
+        IDBeli.setText(model.getValueAt(row, 0).toString());
+        
+        String ktp=model.getValueAt(row, 1).toString();
+        for(int i=0; i<KTPPembeli.getItemCount();i++){
+            if(KTPPembeli.getItemAt(i).startsWith(ktp+":")){
+                KTPPembeli.setSelectedIndex(i);
+                break;
+            }
+        }
+        String kodemobil=model.getValueAt(row, 2).toString();
+        for(int i=0; i<KodeMobil.getItemCount();i++){
+            if(KodeMobil.getItemAt(i).startsWith(kodemobil+":")){
+                KodeMobil.setSelectedIndex(i);
+                break;
+            }
+        }
+        String kodepaket=model.getValueAt(row, 3).toString();
+        for(int i=0; i<PaketKredit.getItemCount();i++){
+            if(PaketKredit.getItemAt(i).startsWith(kodepaket+":")){
+                PaketKredit.setSelectedIndex(i);
+                break;
+            }
+        }
+        try{
+            String tanggal=model.getValueAt(row, 4).toString();
+            SimpleDateFormat adf=new SimpleDateFormat("yyyy-MM-dd");
+            Date date=adf.parse(tanggal);
+            TanggalPembelian.setDate(date);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_TabelKreditMouseClicked
+
+    private void EditButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EditButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            kredit c= new kredit();
+            this.stat=k.getCon().prepareStatement("update kredit set ktp=?,"+"kode_mobil=?,kode_paket=?,tanggal_kredit=?,bayar_kredit=?,"+"tenor=?,totalcicil=? where kode_kredit=?");
+            stat.setString(1, c.ktp);
+            stat.setString(2, c.mobil);
+            stat.setString(3, c.paket);
+            stat.setString(4, c.tanggal);
+            stat.setDouble(5, c.cicilan);
+            stat.setDouble(6, c.tenor);
+            stat.setDouble(7, c.total);
+            stat.setString(8, c.kode);
+            stat.executeUpdate();
+            JOptionPane.showMessageDialog(null, "cicilan perbulannya= RP."+c.cicilan+"\ntenornya sebanyak"+c.tenor+"\ntotal cicilannya sebanyak= RP. "+c.total);
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_EditButtonMouseClicked
+
+    private void HapusButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_HapusButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            kredit c= new kredit();
+            this.stat=k.getCon().prepareStatement("delete from kredit where kode_kredit=?");
+            stat.setString(1, c.kode);
+            stat.executeUpdate();
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_HapusButtonMouseClicked
 
     /**
      * @param args the command line arguments

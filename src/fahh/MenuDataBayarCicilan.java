@@ -3,7 +3,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package fahh;
-
+import java.sql.*;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 /**
  *
  * @author User
@@ -13,9 +20,104 @@ public class MenuDataBayarCicilan extends javax.swing.JFrame {
     /**
      * Creates new form Beranda
      */
+    private DefaultTableModel model=null;
+    private PreparedStatement stat;
+    private ResultSet rs;
+    Koneksi k = new Koneksi();
     public MenuDataBayarCicilan() {
         initComponents();
+        k.connect();
+        ShowTable();
+        ComboKredit();
     }
+    class cicilan extends MenuDataBeliCash{
+        String kode, kredit, tanggal; 
+        int cicilan, tenor, cicilanke, sisacicil, totalcicil, sisaharga;
+        public cicilan()throws Exception{
+        this.kode=KodeCicilan.getText();
+        String combo1=KodeKredit.getSelectedItem().toString();
+        String [] arr=combo1.split(":");
+        this.kode=arr[0];
+        
+        try{
+            Date date = TanggalCicilan.getDate();
+            DateFormat dateformat=new SimpleDateFormat("yyyy-MM-dd");
+            this.tanggal=dateformat.format(date);
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Tanggal Harus dimasukkan"+e.getMessage());
+        }
+        PreparedStatement ps=k.getCon().prepareStatement("select bayar_kredit, tenor, totalcicil from kredit where kode_kredit=?");
+        ps.setString(1, kode);
+        ResultSet rs=ps.executeQuery();
+        if(rs.next()){
+            this.cicilan=rs.getInt("bayar_kredit");
+            this.tenor=rs.getInt("tenor");
+            this.totalcicil=rs.getInt("totalcicil");
+        }else{
+            throw new Exception("Data Tidak Bisa Ditemukan!");
+        }
+        ps=k.getCon().prepareStatement("select count(*) as total from bayar_cicilan where kode_kredit=?");
+        ps.setString(1, kode);
+        rs=ps.executeQuery();
+        if(rs.next()){
+            this.cicilanke=rs.getInt("total")+1;
+        }else{
+            this.cicilanke=1;
+        }
+        this.sisacicil=tenor-cicilanke;
+        this.sisaharga=totalcicil-(cicilanke*cicilan);
+        }
+    }
+    public void ShowTable(){
+        model=new DefaultTableModel();
+        model.addColumn("Kode");
+        model.addColumn("Kredit");
+        model.addColumn("Tanggal");
+        model.addColumn("Cicilan ke");
+        model.addColumn("Jumlah Cicilan");
+        model.addColumn("Sisa Cicilan");
+        model.addColumn("Sisa Harga");
+        TabelBayarCicilan.setModel(model);
+        
+        try{
+            this.stat=k.getCon().prepareStatement("select * from bayar_cicilan");
+            this.rs=this.stat.executeQuery();
+            while(rs.next()){
+                Object[] data={
+                    rs.getString(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    rs.getInt(4),
+                    rs.getInt(5),
+                    rs.getInt(6),
+                    rs.getInt(7)
+                };
+                model.addRow(data);
+            }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+        KodeCicilan.setText("");
+    }
+    public void ComboKredit(){
+    try{
+            this.stat=k.getCon().prepareStatement("select * from kredit");
+            this.rs=this.stat.executeQuery();
+            while(rs.next()){
+                    KodeKredit.addItem(rs.getString("kode_kredit")+":"
+                    +rs.getString("ktp")+":"
+                    +rs.getString("kode_paket")+":"
+                    +rs.getString("kode_mobil")+":"
+                    +rs.getString("tanggal_kredit")+":"
+                    +rs.getString("bayar_kredit")+":"
+                    +rs.getString("tenor")+":"
+                    +rs.getString("totalcicil")+":"
+                    );
+            }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -113,6 +215,11 @@ public class MenuDataBayarCicilan extends javax.swing.JFrame {
         TambahButton.setBackground(new java.awt.Color(51, 51, 255));
         TambahButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         TambahButton.setText("Tambah");
+        TambahButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TambahButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(TambahButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, -1, -1));
 
         EditButton.setBackground(new java.awt.Color(51, 51, 255));
@@ -131,7 +238,6 @@ public class MenuDataBayarCicilan extends javax.swing.JFrame {
         });
         getContentPane().add(SisaHarga, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 230, 570, -1));
 
-        KodeKredit.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         getContentPane().add(KodeKredit, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 140, 570, -1));
         getContentPane().add(TanggalCicilan, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 260, 570, -1));
 
@@ -173,6 +279,26 @@ public class MenuDataBayarCicilan extends javax.swing.JFrame {
         new Beranda().show();
         this.dispose();
     }//GEN-LAST:event_KembaliButtonMouseClicked
+
+    private void TambahButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TambahButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            cicilan c= new cicilan();
+            this.stat=k.getCon().prepareStatement("insert into bayar_cicilan values(?,?,?,?,?,?,?)");
+            stat.setString(1, c.kode);
+            stat.setString(2, c.kredit);
+            stat.setString(3, c.tanggal);
+            stat.setInt(4, c.cicilanke);
+            stat.setInt(5, c.cicilan);
+            stat.setInt(6, c.sisacicil);
+            stat.setInt(7, c.sisaharga);
+            stat.executeUpdate();
+            JOptionPane.showMessageDialog(null, "ini adalah cicilan ke-"+c.cicilanke+"\nsisa cicilan"+c.sisacicil+"\nsisa harganya= RP. "+c.sisaharga);
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "data gagal disimpan"+e.getMessage());
+        }
+    }//GEN-LAST:event_TambahButtonMouseClicked
 
     /**
      * @param args the command line arguments
