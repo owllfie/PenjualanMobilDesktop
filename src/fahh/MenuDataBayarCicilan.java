@@ -37,7 +37,7 @@ public class MenuDataBayarCicilan extends javax.swing.JFrame {
         this.kode=KodeCicilan.getText();
         String combo1=KodeKredit.getSelectedItem().toString();
         String [] arr=combo1.split(":");
-        this.kode=arr[0];
+        this.kredit=arr[0];
         
         try{
             Date date = TanggalCicilan.getDate();
@@ -47,7 +47,7 @@ public class MenuDataBayarCicilan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Tanggal Harus dimasukkan"+e.getMessage());
         }
         PreparedStatement ps=k.getCon().prepareStatement("select bayar_kredit, tenor, totalcicil from kredit where kode_kredit=?");
-        ps.setString(1, kode);
+        ps.setString(1, kredit);
         ResultSet rs=ps.executeQuery();
         if(rs.next()){
             this.cicilan=rs.getInt("bayar_kredit");
@@ -57,7 +57,7 @@ public class MenuDataBayarCicilan extends javax.swing.JFrame {
             throw new Exception("Data Tidak Bisa Ditemukan!");
         }
         ps=k.getCon().prepareStatement("select count(*) as total from bayar_cicilan where kode_kredit=?");
-        ps.setString(1, kode);
+        ps.setString(1, kredit);
         rs=ps.executeQuery();
         if(rs.next()){
             this.cicilanke=rs.getInt("total")+1;
@@ -198,6 +198,11 @@ public class MenuDataBayarCicilan extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        TabelBayarCicilan.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TabelBayarCicilanMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(TabelBayarCicilan);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 950, -1));
@@ -225,6 +230,11 @@ public class MenuDataBayarCicilan extends javax.swing.JFrame {
         EditButton.setBackground(new java.awt.Color(51, 51, 255));
         EditButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         EditButton.setText("Edit");
+        EditButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                EditButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(EditButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 310, -1, -1));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -299,6 +309,48 @@ public class MenuDataBayarCicilan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "data gagal disimpan"+e.getMessage());
         }
     }//GEN-LAST:event_TambahButtonMouseClicked
+
+    private void TabelBayarCicilanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TabelBayarCicilanMouseClicked
+        // TODO add your handling code here:
+        int row=TabelBayarCicilan.getSelectedRow();
+        KodeCicilan.setText(model.getValueAt(row, 0).toString());
+        
+        String Kredit=model.getValueAt(row, 1).toString();
+        for(int i=0; i<KodeKredit.getItemCount();i++){
+            if(KodeKredit.getItemAt(i).startsWith(Kredit+":")){
+                KodeKredit.setSelectedIndex(i);
+                break;
+            }
+        }
+        try{
+            String tanggal=model.getValueAt(row, 2).toString();
+            SimpleDateFormat adf=new SimpleDateFormat("yyyy-MM-dd");
+            Date date=adf.parse(tanggal);
+            TanggalCicilan.setDate(date);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_TabelBayarCicilanMouseClicked
+
+    private void EditButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EditButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            cicilan c= new cicilan();
+            this.stat=k.getCon().prepareStatement("update bayar_cicilan set kode_kredit=?,"+"tanggal_cicilan=?,cicilanke=?,jumlah_cicilan=?,sisacicilke=?,sisa_cicilan=? where kode_cicilan=?");
+            stat.setString(1, c.kredit);
+            stat.setString(2, c.tanggal);
+            stat.setInt(3, c.cicilanke);
+            stat.setInt(4, c.cicilan);
+            stat.setInt(5, c.sisacicil);
+            stat.setInt(6, c.sisaharga);
+            stat.setString(7, c.kode);
+            stat.executeUpdate();
+            JOptionPane.showMessageDialog(null, "ini adalah cicilan ke-"+c.cicilanke+"\nsisa cicilan"+c.sisacicil+"kali\nsisa harganya RP."+c.sisaharga);
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_EditButtonMouseClicked
 
     /**
      * @param args the command line arguments
