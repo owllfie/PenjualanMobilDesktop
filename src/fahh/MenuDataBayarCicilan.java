@@ -158,6 +158,11 @@ public class MenuDataBayarCicilan extends javax.swing.JFrame {
         HapusButton.setBackground(new java.awt.Color(51, 51, 255));
         HapusButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         HapusButton.setText("Hapus");
+        HapusButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                HapusButtonMouseClicked(evt);
+            }
+        });
         getContentPane().add(HapusButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 310, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -336,7 +341,7 @@ public class MenuDataBayarCicilan extends javax.swing.JFrame {
         // TODO add your handling code here:
         try{
             cicilan c= new cicilan();
-            this.stat=k.getCon().prepareStatement("update bayar_cicilan set kode_kredit=?,"+"tanggal_cicilan=?,cicilanke=?,jumlah_cicilan=?,sisacicilke=?,sisa_cicilan=? where kode_cicilan=?");
+            this.stat=k.getCon().prepareStatement("update bayar_cicilan set kode_kredit=?,tanggal_cicilan=?,"+"cicilanke=?,jumlah_cicilan=?,sisacicilke=?,sisa_cicilan=? where kode_cicilan=?");
             stat.setString(1, c.kredit);
             stat.setString(2, c.tanggal);
             stat.setInt(3, c.cicilanke);
@@ -351,6 +356,19 @@ public class MenuDataBayarCicilan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
     }//GEN-LAST:event_EditButtonMouseClicked
+
+    private void HapusButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_HapusButtonMouseClicked
+        // TODO add your handling code here:
+        try{
+            cicilan c= new cicilan();
+            this.stat=k.getCon().prepareStatement("delete from bayar_cicilan where kode_cicilan=?");
+            stat.setString(1, c.kode);
+            stat.executeUpdate();
+            ShowTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_HapusButtonMouseClicked
 
     /**
      * @param args the command line arguments

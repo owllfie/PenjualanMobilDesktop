@@ -155,14 +155,20 @@ public class Beranda extends javax.swing.JFrame {
 
     private void PenjualanCashButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PenjualanCashButtonActionPerformed
         // TODO add your handling code here:
+        new LaporanJualCash().show();
+        this.dispose();
     }//GEN-LAST:event_PenjualanCashButtonActionPerformed
 
     private void PenjualanKreditButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PenjualanKreditButtonActionPerformed
         // TODO add your handling code here:
+        new LaporanJualKredit().show();
+        this.dispose();
     }//GEN-LAST:event_PenjualanKreditButtonActionPerformed
 
     private void StatusCicilanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StatusCicilanButtonActionPerformed
         // TODO add your handling code here:
+        new LaporanStatusCicilan().show();
+        this.dispose();
     }//GEN-LAST:event_StatusCicilanButtonActionPerformed
 
     private void DataPaketButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DataPaketButtonActionPerformed
