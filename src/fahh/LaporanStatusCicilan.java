@@ -27,97 +27,69 @@ public class LaporanStatusCicilan extends javax.swing.JFrame {
     public LaporanStatusCicilan() {
         initComponents();
         k.connect();
-        ShowTable();
-        ComboKredit();
     }
-    class cicilan extends MenuDataBeliCash{
-        String kode, kredit, tanggal; 
-        int cicilan, tenor, cicilanke, sisacicil, totalcicil, sisaharga;
-        public cicilan()throws Exception{
-        this.kode=KodeCicilan.getText();
-        String combo1=PilihanLaporan.getSelectedItem().toString();
-        String [] arr=combo1.split(":");
-        this.kredit=arr[0];
-        
+    public void ShowData(){
         try{
-            Date date = TanggalAkhir.getDate();
-            DateFormat dateformat=new SimpleDateFormat("yyyy-MM-dd");
-            this.tanggal=dateformat.format(date);
+            String pilihan=PilihanLaporan.getSelectedItem().toString();
+            DateFormat df=new SimpleDateFormat("yyyy-MM-dd");
+            String sql="select bc.kode_cicilan,k.kode_kredit,p.nama_pembeli,"
+                    +"concat(m.merk,'',m.type) as mobil,"
+                    +"bc.cicilanke,bc.jumlah_cicilan,bc.tanggal_cicilan,bc.sisacicilke, "
+                    +"bc.sisa_cicilan,"
+                    +"case when bc.sisa_cicilan=0 then 'LUNAS' else 'BELUM LUNAS' end as status "
+                    +"from bayar_cicilan bc "
+                    +"join kredit k on k.kode_kredit=bc.kode_kredit "
+                    +"join pembeli p on k.ktp=p.ktp "
+                    +"join mobil m on k.kode_mobil=m.kode_mobil ";
+            if("Harian".equals(pilihan)){
+                Date date=Periode.getDate();
+                String tgl=df.format(date);
+                sql+="where bc.tanggal_cicilan='"+tgl+"'";
+            }else if("Mingguan".equals(pilihan)){
+                Date awal=TanggalAwal.getDate();
+                Date akhir=TanggalAkhir.getDate();
+                String tglawal=df.format(awal);
+                String tglakhir=df.format(akhir);
+                sql+="where bc.tanggal_cicilan between'"+tglawal+"' and '"+tglakhir+"'";
+            }else if("Bulanan".equals(pilihan)){
+                Date date =Periode.getDate();
+                DateFormat bln=new SimpleDateFormat("MM");
+                DateFormat thn=new SimpleDateFormat("yyyy");
+                String bulan=bln.format(date);
+                String tahun=thn.format(date);
+                sql+="where month(bc.tanggal_cicilan)="+bulan+" and year (bc.tanggal_cicilan)="+tahun;
+            }else if("Tahunan".equals(pilihan)){
+                Date date=Periode.getDate();
+                DateFormat thn=new SimpleDateFormat("yyyy");
+                String tahun=thn.format(date);
+                sql+="where year(bc.tanggal_cicilan)="+tahun;
+            }
+            
+            stat=k.getCon().prepareStatement(sql);
+            rs=stat.executeQuery();
+            model=new DefaultTableModel(new String[]{
+                "Kode Cicilan","Kode Kredit","Nama Pembeli","Merk dan Tipe Mobil","Cicilanke-","Cicilan perbulan","Tanggal Bayar","Sisa Cicilan","Sisa Harga","Status Cicilan"
+            },0);
+            while(rs.next()){
+                model.addRow(new Object[]{
+                    rs.getString("kode_cicilan"),
+                    rs.getString("kode_kredit"),
+                    rs.getString("nama_pembeli"),
+                    rs.getString("mobil"),
+                    rs.getLong("cicilanke"),
+                    rs.getLong("jumlah_cicilan"),
+                    rs.getDate("tanggal_cicilan"),
+                    rs.getLong("sisacicilke"),
+                    rs.getLong("sisa_cicilan"),
+                    rs.getString("status")
+                });
+            }
+            TabelLaporanStatusCicilan.setModel(model);
         }catch(Exception e){
-            JOptionPane.showMessageDialog(null, "Tanggal Harus dimasukkan"+e.getMessage());
-        }
-        PreparedStatement ps=k.getCon().prepareStatement("select bayar_kredit, tenor, totalcicil from kredit where kode_kredit=?");
-        ps.setString(1, kredit);
-        ResultSet rs=ps.executeQuery();
-        if(rs.next()){
-            this.cicilan=rs.getInt("bayar_kredit");
-            this.tenor=rs.getInt("tenor");
-            this.totalcicil=rs.getInt("totalcicil");
-        }else{
-            throw new Exception("Data Tidak Bisa Ditemukan!");
-        }
-        ps=k.getCon().prepareStatement("select count(*) as total from bayar_cicilan where kode_kredit=?");
-        ps.setString(1, kredit);
-        rs=ps.executeQuery();
-        if(rs.next()){
-            this.cicilanke=rs.getInt("total")+1;
-        }else{
-            this.cicilanke=1;
-        }
-        this.sisacicil=tenor-cicilanke;
-        this.sisaharga=totalcicil-(cicilanke*cicilan);
+            JOptionPane.showMessageDialog(this, "Error menampilkan data!"+e.getMessage());
+            e.printStackTrace();
         }
     }
-    public void ShowTable(){
-        model=new DefaultTableModel();
-        model.addColumn("Kode");
-        model.addColumn("Kredit");
-        model.addColumn("Tanggal");
-        model.addColumn("Cicilan ke");
-        model.addColumn("Jumlah Cicilan");
-        model.addColumn("Sisa Cicilan");
-        model.addColumn("Sisa Harga");
-        TabelLaporanStatusCicilan.setModel(model);
-        
-        try{
-            this.stat=k.getCon().prepareStatement("select * from bayar_cicilan");
-            this.rs=this.stat.executeQuery();
-            while(rs.next()){
-                Object[] data={
-                    rs.getString(1),
-                    rs.getString(2),
-                    rs.getString(3),
-                    rs.getInt(4),
-                    rs.getInt(5),
-                    rs.getInt(6),
-                    rs.getInt(7)
-                };
-                model.addRow(data);
-            }
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(null, e.getMessage());
-        }
-        KodeCicilan.setText("");
-    }
-    public void ComboKredit(){
-    try{
-            this.stat=k.getCon().prepareStatement("select * from kredit");
-            this.rs=this.stat.executeQuery();
-            while(rs.next()){
-                    PilihanLaporan.addItem(rs.getString("kode_kredit")+":"
-                    +rs.getString("ktp")+":"
-                    +rs.getString("kode_paket")+":"
-                    +rs.getString("kode_mobil")+":"
-                    +rs.getString("tanggal_kredit")+":"
-                    +rs.getString("bayar_kredit")+":"
-                    +rs.getString("tenor")+":"
-                    +rs.getString("totalcicil")+":"
-                    );
-            }
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(null, e.getMessage());
-        }
-}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -202,8 +174,14 @@ public class LaporanStatusCicilan extends javax.swing.JFrame {
 
         TampilkanLaporan.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         TampilkanLaporan.setText("Tampilkan Laporan");
+        TampilkanLaporan.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TampilkanLaporanMouseClicked(evt);
+            }
+        });
         getContentPane().add(TampilkanLaporan, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 460, 110, 20));
 
+        PilihanLaporan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Harian", "Mingguan", "Bulanan", "Tahunan" }));
         getContentPane().add(PilihanLaporan, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 110, 120, -1));
         getContentPane().add(TanggalAkhir, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 310, 130, -1));
         getContentPane().add(Periode, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 110, 130, -1));
@@ -220,25 +198,12 @@ public class LaporanStatusCicilan extends javax.swing.JFrame {
 
     private void TabelLaporanStatusCicilanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TabelLaporanStatusCicilanMouseClicked
         // TODO add your handling code here:
-        int row=TabelLaporanStatusCicilan.getSelectedRow();
-        KodeCicilan.setText(model.getValueAt(row, 0).toString());
-        
-        String Kredit=model.getValueAt(row, 1).toString();
-        for(int i=0; i<PilihanLaporan.getItemCount();i++){
-            if(PilihanLaporan.getItemAt(i).startsWith(Kredit+":")){
-                PilihanLaporan.setSelectedIndex(i);
-                break;
-            }
-        }
-        try{
-            String tanggal=model.getValueAt(row, 2).toString();
-            SimpleDateFormat adf=new SimpleDateFormat("yyyy-MM-dd");
-            Date date=adf.parse(tanggal);
-            TanggalAkhir.setDate(date);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
     }//GEN-LAST:event_TabelLaporanStatusCicilanMouseClicked
+
+    private void TampilkanLaporanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TampilkanLaporanMouseClicked
+        // TODO add your handling code here:
+        ShowData();
+    }//GEN-LAST:event_TampilkanLaporanMouseClicked
 
     /**
      * @param args the command line arguments

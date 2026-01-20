@@ -32,29 +32,29 @@ public class LaporanJualCash extends javax.swing.JFrame {
         try{
             String pilihan=PilihanLaporan.getSelectedItem().toString();
             DateFormat df=new SimpleDateFormat("yyyy-MM-dd");
-            String sql="select bc.kode_cash,p.nama_pembeli,"+"concat(m.merk,'',m.type) as mobil,"+"m.harga,bc.cash_tanggal,bc.cash_bayar "+"from beli_cash bc "+"join pembeli p on bc.ktp=p.ktp "+"join mobil m on bc.kode_mobil=m.kode_mobil ";
-            if("harian".equals(pilihan)){
+            String sql="select bc.kode_cash,p.nama_pembeli,"+"concat(m.merk,'',m.type) as mobil,"+"m.harga,bc.cash_tgl,bc.cash_bayar "+"from beli_cash bc "+"join pembeli p on bc.ktp=p.ktp "+"join mobil m on bc.kode_mobil=m.kode_mobil ";
+            if("Harian".equals(pilihan)){
                 Date date=Periode.getDate();
                 String tgl=df.format(date);
-                sql+="where bc.cash_tanggal='"+tgl+"'";
-            }else if("mingguan".equals(pilihan)){
+                sql+="where bc.cash_tgl='"+tgl+"'";
+            }else if("Mingguan".equals(pilihan)){
                 Date awal=TanggalAwal.getDate();
                 Date akhir=TanggalAkhir.getDate();
                 String tglawal=df.format(awal);
                 String tglakhir=df.format(akhir);
-                sql+="where bc.cash_tanggal between'"+tglawal+"' and '"+tglakhir+"'";
-            }else if("bulanan".equals(pilihan)){
+                sql+="where bc.cash_tgl between'"+tglawal+"' and '"+tglakhir+"'";
+            }else if("Bulanan".equals(pilihan)){
                 Date date =Periode.getDate();
                 DateFormat bln=new SimpleDateFormat("MM");
                 DateFormat thn=new SimpleDateFormat("yyyy");
                 String bulan=bln.format(date);
                 String tahun=thn.format(date);
-                sql+="where month(bc.cash_tanggal)="+bulan+" and year (bc.cash_tgl)="+tahun;
-            }else if("tahunan".equals(pilihan)){
+                sql+="where month(bc.cash_tgl)="+bulan+" and year (bc.cash_tgl)="+tahun;
+            }else if("Tahunan".equals(pilihan)){
                 Date date=Periode.getDate();
                 DateFormat thn=new SimpleDateFormat("yyyy");
                 String tahun=thn.format(date);
-                sql+="where year (bc.cash_tanggal)="+tahun;
+                sql+="where year(bc.cash_tgl)="+tahun;
             }
             
             stat=k.getCon().prepareStatement(sql);
@@ -188,6 +188,7 @@ public class LaporanJualCash extends javax.swing.JFrame {
         });
         getContentPane().add(TampilkanLaporan, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 460, 110, 20));
 
+        PilihanLaporan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Harian", "Mingguan", "Bulanan", "Tahunan" }));
         getContentPane().add(PilihanLaporan, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 110, 120, -1));
         getContentPane().add(TanggalAkhir, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 310, 130, -1));
         getContentPane().add(Periode, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 110, 130, -1));
