@@ -6,6 +6,14 @@ package fahh;
 import java.sql.*;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JFileChooser;
+import java.lang.Object;
+import java.awt.Component;
+import java.awt.Container;
+import java.io.File;
+import java.nio.file.Files;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 /**
  *
  * @author User
@@ -16,6 +24,7 @@ public class MenuDataMobil extends javax.swing.JFrame {
     private PreparedStatement stat;
     private ResultSet rs;
     Koneksi k = new Koneksi();
+    private String selectedImagePath=";";
     public MenuDataMobil() {
         initComponents();
         k.connect();
@@ -23,7 +32,7 @@ public class MenuDataMobil extends javax.swing.JFrame {
     }
     
     class mobil extends MenuDataMobil{
-        String kode, merk, type, warna;
+        String kode, merk, type, warna, gambar;
         int harga;  
         
         public mobil(){
@@ -32,6 +41,7 @@ public class MenuDataMobil extends javax.swing.JFrame {
             this.type=TipeMobil.getText();
             this.warna=WarnaMobil.getText();
             this.harga=Integer.parseInt(HargaMobil.getText());
+            this.gambar=selectedImagePath;
         }
     }
     
@@ -42,6 +52,7 @@ public class MenuDataMobil extends javax.swing.JFrame {
         model.addColumn("Tipe");
         model.addColumn("Warna");
         model.addColumn("Harga");
+        model.addColumn("Gambar");
         TabelMobil.setModel(model);
         
         try{
@@ -53,7 +64,8 @@ public class MenuDataMobil extends javax.swing.JFrame {
                     rs.getString(2),
                     rs.getString(3),
                     rs.getString(4),
-                    rs.getInt(5)
+                    rs.getInt(5),
+                    rs.getString(6)
                 };
                 model.addRow(data);
             }
@@ -65,6 +77,7 @@ public class MenuDataMobil extends javax.swing.JFrame {
         TipeMobil.setText("");
         WarnaMobil.setText("");
         HargaMobil.setText("");
+        Gambar.setText("");
     }
 
     /**
@@ -93,6 +106,8 @@ public class MenuDataMobil extends javax.swing.JFrame {
         KembaliButton = new javax.swing.JLabel();
         TambahButton = new javax.swing.JLabel();
         EditButton = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        Gambar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -109,62 +124,62 @@ public class MenuDataMobil extends javax.swing.JFrame {
                 HapusButtonMouseClicked(evt);
             }
         });
-        getContentPane().add(HapusButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 310, -1, -1));
+        getContentPane().add(HapusButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 470, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("Kode Mobil:");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 110, 70, 20));
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 60, 70, 20));
 
         KodeMobil.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 KodeMobilActionPerformed(evt);
             }
         });
-        getContentPane().add(KodeMobil, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 110, 600, -1));
+        getContentPane().add(KodeMobil, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 60, 600, -1));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel4.setText("Merk:");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 140, 70, 20));
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 90, 70, 20));
 
         Merk.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MerkActionPerformed(evt);
             }
         });
-        getContentPane().add(Merk, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 140, 600, -1));
+        getContentPane().add(Merk, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 90, 600, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel5.setText("Tipe Mobil:");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 170, 70, 20));
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 120, 70, 20));
 
         TipeMobil.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 TipeMobilActionPerformed(evt);
             }
         });
-        getContentPane().add(TipeMobil, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 170, 600, -1));
+        getContentPane().add(TipeMobil, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 120, 600, -1));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel6.setText("Warna Mobil:");
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 200, 80, 20));
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 150, 80, 20));
 
         WarnaMobil.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 WarnaMobilActionPerformed(evt);
             }
         });
-        getContentPane().add(WarnaMobil, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 200, 600, -1));
+        getContentPane().add(WarnaMobil, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 150, 600, -1));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel7.setText("Harga Mobil:");
-        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 230, 70, 20));
+        jLabel7.setText("Gambar:");
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 210, 70, 20));
 
         HargaMobil.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 HargaMobilActionPerformed(evt);
             }
         });
-        getContentPane().add(HargaMobil, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 230, 600, -1));
+        getContentPane().add(HargaMobil, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 180, 600, -1));
 
         TabelMobil.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -184,7 +199,7 @@ public class MenuDataMobil extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(TabelMobil);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 950, -1));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 537, 950, 250));
 
         KembaliButton.setBackground(new java.awt.Color(51, 51, 255));
         KembaliButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -204,7 +219,7 @@ public class MenuDataMobil extends javax.swing.JFrame {
                 TambahButtonMouseClicked(evt);
             }
         });
-        getContentPane().add(TambahButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, -1, -1));
+        getContentPane().add(TambahButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 470, -1, -1));
 
         EditButton.setBackground(new java.awt.Color(51, 51, 255));
         EditButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -214,7 +229,19 @@ public class MenuDataMobil extends javax.swing.JFrame {
                 EditButtonMouseClicked(evt);
             }
         });
-        getContentPane().add(EditButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 310, -1, -1));
+        getContentPane().add(EditButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 470, -1, -1));
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel8.setText("Harga Mobil:");
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 180, 70, 20));
+
+        Gambar.setText("Pilih Gambar");
+        Gambar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GambarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(Gambar, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 210, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -249,12 +276,21 @@ public class MenuDataMobil extends javax.swing.JFrame {
         // TODO add your handling code here:
         try{
             mobil m=new mobil();
-            this.stat=k.getCon().prepareStatement("insert into mobil values(?, ?, ? ,? ,?)");
+            String newFileName="";
+            if(!m.gambar.equals("")){
+                File sourceFile=new File(m.gambar);
+                File destDir= new File("uploads");
+                if(!destDir.exists()) destDir.mkdir();
+                newFileName="uploads/"+sourceFile.getName();
+                Files.copy(sourceFile.toPath(),new File(newFileName).toPath());
+            }
+            this.stat=k.getCon().prepareStatement("insert into mobil values(?,?,?,?,?,?)");
             stat.setString(1, m.kode);
             stat.setString(2, m.merk);
             stat.setString(3, m.type);
             stat.setString(4, m.warna);
             stat.setInt(5, m.harga);
+            stat.setString(6, newFileName);
             stat.executeUpdate();
             ShowTable();
         }catch(Exception e){
@@ -269,18 +305,34 @@ public class MenuDataMobil extends javax.swing.JFrame {
         TipeMobil.setText(model.getValueAt(TabelMobil.getSelectedRow(), 2).toString());
         WarnaMobil.setText(model.getValueAt(TabelMobil.getSelectedRow(), 3).toString());
         HargaMobil.setText(model.getValueAt(TabelMobil.getSelectedRow(), 4).toString());
+        selectedImagePath=model.getValueAt(TabelMobil.getSelectedRow(), 5).toString();
+        if(selectedImagePath!=null && !selectedImagePath.isEmpty()){
+            ImageIcon icon= new ImageIcon(new ImageIcon(selectedImagePath).getImage().getScaledInstance(150, 150, java.awt.Image.SCALE_SMOOTH));
+            Gambar.setIcon(icon);
+        }else{
+            Gambar.setIcon(null);
+        }
     }//GEN-LAST:event_TabelMobilMouseClicked
 
     private void EditButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EditButtonMouseClicked
         // TODO add your handling code here:
         try{
             mobil m=new mobil();
-            this.stat=k.getCon().prepareStatement("update mobil set merk=?,"+"type=?,warna=?,harga=? where kode_mobil=?");
+            String newFileName="";
+            if(!m.gambar.equals("")){
+                File sourceFile=new File(m.gambar);
+                File destDir= new File("uploads");
+                if(!destDir.exists()) destDir.mkdir();
+                newFileName="uploads/"+sourceFile.getName();
+                Files.copy(sourceFile.toPath(),new File(newFileName).toPath());
+            }
+            this.stat=k.getCon().prepareStatement("update mobil set merk=?,"+"type=?,warna=?,harga=?,gambar=? where kode_mobil=?");
             stat.setString(1, m.merk);
             stat.setString(2, m.type);
             stat.setString(3, m.warna);
             stat.setInt(4, m.harga);
-            stat.setString(5, KodeMobil.getText());
+            stat.setString(5, newFileName);
+            stat.setString(6, KodeMobil.getText());
             stat.executeUpdate();
             ShowTable();
         }catch(Exception e){
@@ -292,6 +344,14 @@ public class MenuDataMobil extends javax.swing.JFrame {
         // TODO add your handling code here:
         try{
             mobil m=new mobil();
+            String newFileName="";
+            if(!m.gambar.equals("")){
+                File sourceFile=new File(m.gambar);
+                File destDir= new File("uploads");
+                if(!destDir.exists()) destDir.mkdir();
+                newFileName="uploads/"+sourceFile.getName();
+                Files.copy(sourceFile.toPath(),new File(newFileName).toPath());
+            }
             this.stat=k.getCon().prepareStatement("delete from mobil where kode_mobil=?");
             stat.setString(1, KodeMobil.getText());
             stat.executeUpdate();
@@ -300,6 +360,17 @@ public class MenuDataMobil extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
     }//GEN-LAST:event_HapusButtonMouseClicked
+
+    private void GambarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GambarActionPerformed
+        // TODO add your handling code here:
+        JFileChooser chooser= new JFileChooser();
+        int option= chooser.showOpenDialog(this);
+        if(option==JFileChooser.APPROVE_OPTION){
+            File file=chooser.getSelectedFile();
+            selectedImagePath=file.getAbsolutePath();
+            JOptionPane.showMessageDialog(this, "Gambar yang dipilih: "+selectedImagePath);
+        }
+    }//GEN-LAST:event_GambarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -339,6 +410,7 @@ public class MenuDataMobil extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel EditButton;
+    private javax.swing.JButton Gambar;
     private javax.swing.JLabel HapusButton;
     private javax.swing.JTextField HargaMobil;
     private javax.swing.JLabel KembaliButton;
@@ -354,6 +426,7 @@ public class MenuDataMobil extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }

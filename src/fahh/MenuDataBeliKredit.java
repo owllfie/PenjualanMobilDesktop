@@ -11,6 +11,15 @@ import java.sql.ResultSet;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JFileChooser;
+import java.lang.Object;
+import java.awt.Component;
+import java.awt.Container;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 
 /**
  *
@@ -25,6 +34,8 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
     private PreparedStatement stat;
     private ResultSet rs;
     Koneksi k = new Koneksi();
+    private String pathKTP="";
+    private String pathSlip="";
     public MenuDataBeliKredit() {
         initComponents();
         k.connect();
@@ -70,6 +81,23 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         }
         }
     }
+    private String simpanFile(String asalPath, String prefix){
+        try{
+            if(asalPath==null || asalPath.isEmpty()) return null;
+            File asal=new File(asalPath);
+            String namaFile=prefix+"_"+System.currentTimeMillis()+"_"+asal.getName();
+            
+            File folder=new File("uploads");
+            if(!folder.exists()) folder.mkdir();
+            
+            File tujuan=new File(folder, namaFile);
+            Files.copy(asal.toPath(), tujuan.toPath(),StandardCopyOption.REPLACE_EXISTING);
+            return tujuan.getPath();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Gagal Menyimpan File"+e.getMessage());
+            return null;
+        }
+    }
         public void ShowTable(){
         model=new DefaultTableModel();
         model.addColumn("Kode");
@@ -80,6 +108,8 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         model.addColumn("Bayar");
         model.addColumn("Tenor");
         model.addColumn("Total");
+        model.addColumn("Path KTP");
+        model.addColumn("Path Slip");
         TabelKredit.setModel(model);
         
         try{
@@ -94,7 +124,9 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
                     rs.getString(5),
                     rs.getInt(6),
                     rs.getInt(7),
-                    rs.getInt(8)
+                    rs.getInt(8),
+                    rs.getString(9),
+                    rs.getString(10)
                 };
                 model.addRow(data);
             }
@@ -176,6 +208,10 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         KTPPembeli = new javax.swing.JComboBox<>();
         KodeMobil = new javax.swing.JComboBox<>();
         TanggalPembelian = new com.toedter.calendar.JDateChooser();
+        lblktp = new javax.swing.JLabel();
+        lblslip = new javax.swing.JLabel();
+        GambarSlip = new javax.swing.JButton();
+        GambarKTP = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -192,7 +228,7 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
                 HapusButtonMouseClicked(evt);
             }
         });
-        getContentPane().add(HapusButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 310, -1, -1));
+        getContentPane().add(HapusButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 550, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("ID Beli:");
@@ -239,7 +275,7 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(TabelKredit);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 950, -1));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 607, 950, 180));
 
         KembaliButton.setBackground(new java.awt.Color(51, 51, 255));
         KembaliButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -259,7 +295,7 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
                 TambahButtonMouseClicked(evt);
             }
         });
-        getContentPane().add(TambahButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, -1, -1));
+        getContentPane().add(TambahButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 550, -1, -1));
 
         EditButton.setBackground(new java.awt.Color(51, 51, 255));
         EditButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -269,7 +305,7 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
                 EditButtonMouseClicked(evt);
             }
         });
-        getContentPane().add(EditButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 310, -1, -1));
+        getContentPane().add(EditButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 550, -1, -1));
 
         getContentPane().add(PaketKredit, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 200, 570, -1));
 
@@ -288,6 +324,30 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
 
         getContentPane().add(KodeMobil, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 170, 570, -1));
         getContentPane().add(TanggalPembelian, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 230, 570, -1));
+
+        lblktp.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblktp.setText("Gambar KTP:");
+        getContentPane().add(lblktp, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 290, 110, 20));
+
+        lblslip.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblslip.setText("Gambar Slip Gaji:");
+        getContentPane().add(lblslip, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 410, 110, 20));
+
+        GambarSlip.setText("Pilih Gambar");
+        GambarSlip.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                GambarSlipMouseClicked(evt);
+            }
+        });
+        getContentPane().add(GambarSlip, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 410, -1, -1));
+
+        GambarKTP.setText("Pilih Gambar");
+        GambarKTP.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                GambarKTPMouseClicked(evt);
+            }
+        });
+        getContentPane().add(GambarKTP, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 290, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -309,8 +369,10 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
     private void TambahButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TambahButtonMouseClicked
         // TODO add your handling code here:
         try{
+            String ktpPath=simpanFile(pathKTP, "ktp");
+            String slipPath=simpanFile(pathSlip,"slip");
             kredit c= new kredit();
-            this.stat=k.getCon().prepareStatement("insert into kredit values(?,?,?,?,?,?,?,?)");
+            this.stat=k.getCon().prepareStatement("insert into kredit values(?,?,?,?,?,?,?,?,?,?)");
             stat.setString(1, c.kode);
             stat.setString(2, c.ktp);
             stat.setString(3, c.mobil);
@@ -319,6 +381,8 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
             stat.setInt(6, c.cicilan);
             stat.setInt(7, c.tenor);
             stat.setInt(8, c.total);
+            stat.setString(9, ktpPath);
+            stat.setString(10, slipPath);
             stat.executeUpdate();
             JOptionPane.showMessageDialog(null, "cicilan perbulannya= RP."+c.cicilan+"\ntenornya sebanyak"+c.tenor+"\ntotal cicilannya sebanyak= RP. "+c.total);
             ShowTable();
@@ -361,13 +425,32 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         }catch(Exception e){
             e.printStackTrace();
         }
+        
+        String pathKTP=model.getValueAt(row, 8).toString();
+        if(pathKTP !=null && !pathKTP.isEmpty()){
+        ImageIcon iconKTP=new ImageIcon(new ImageIcon(pathKTP)
+                .getImage().getScaledInstance(80, 80, java.awt.Image.SCALE_SMOOTH));
+        lblktp.setIcon(iconKTP);
+    }else{
+            lblktp.setIcon(null);
+        }
+        String pathSlip=model.getValueAt(row, 9).toString();
+        if(pathSlip !=null && !pathSlip.isEmpty()){
+        ImageIcon iconSlip=new ImageIcon(new ImageIcon(pathSlip)
+                .getImage().getScaledInstance(80, 80, java.awt.Image.SCALE_SMOOTH));
+        lblslip.setIcon(iconSlip);
+    }else{
+            lblslip.setIcon(null);
+        }
     }//GEN-LAST:event_TabelKreditMouseClicked
 
     private void EditButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EditButtonMouseClicked
         // TODO add your handling code here:
         try{
             kredit c= new kredit();
-            this.stat=k.getCon().prepareStatement("update kredit set ktp=?,"+"kode_mobil=?,kode_paket=?,tanggal_kredit=?,bayar_kredit=?,"+"tenor=?,totalcicil=? where kode_kredit=?");
+            String ktpPath=(pathKTP.isEmpty())?null:simpanFile(pathKTP,"ktp");
+            String slipPath=(pathSlip.isEmpty())?null:simpanFile(pathSlip,"slip");
+            this.stat=k.getCon().prepareStatement("update kredit set ktp=?,"+"kode_mobil=?,kode_paket=?,tanggal_kredit=?,bayar_kredit=?,"+"tenor=?,totalcicil=?,gbrktp?,gbrslip=? where kode_kredit=?");
             stat.setString(1, c.ktp);
             stat.setString(2, c.mobil);
             stat.setString(3, c.paket);
@@ -375,7 +458,9 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
             stat.setDouble(5, c.cicilan);
             stat.setDouble(6, c.tenor);
             stat.setDouble(7, c.total);
-            stat.setString(8, c.kode);
+            stat.setString(8, ktpPath);
+            stat.setString(9, slipPath);
+            stat.setString(10, c.kode);
             stat.executeUpdate();
             JOptionPane.showMessageDialog(null, "cicilan perbulannya= RP."+c.cicilan+"\ntenornya sebanyak"+c.tenor+"\ntotal cicilannya sebanyak= RP. "+c.total);
             ShowTable();
@@ -396,6 +481,28 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
     }//GEN-LAST:event_HapusButtonMouseClicked
+
+    private void GambarKTPMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_GambarKTPMouseClicked
+        // TODO add your handling code here:
+        JFileChooser chooser=new JFileChooser();
+        int result=chooser.showOpenDialog(this);
+        if(result==JFileChooser.APPROVE_OPTION){
+            File file=chooser.getSelectedFile();
+            pathKTP=file.getAbsolutePath();
+            lblktp.setText(file.getName());
+        }
+    }//GEN-LAST:event_GambarKTPMouseClicked
+
+    private void GambarSlipMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_GambarSlipMouseClicked
+        // TODO add your handling code here:
+        JFileChooser chooser=new JFileChooser();
+        int result=chooser.showOpenDialog(this);
+        if(result==JFileChooser.APPROVE_OPTION){
+            File file=chooser.getSelectedFile();
+            pathSlip=file.getAbsolutePath();
+            lblslip.setText(file.getName());
+        }
+    }//GEN-LAST:event_GambarSlipMouseClicked
 
     /**
      * @param args the command line arguments
@@ -438,6 +545,8 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField Bayar;
     private javax.swing.JLabel EditButton;
+    private javax.swing.JButton GambarKTP;
+    private javax.swing.JButton GambarSlip;
     private javax.swing.JLabel HapusButton;
     private javax.swing.JTextField IDBeli;
     private javax.swing.JComboBox<String> KTPPembeli;
@@ -455,5 +564,7 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblktp;
+    private javax.swing.JLabel lblslip;
     // End of variables declaration//GEN-END:variables
 }
