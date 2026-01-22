@@ -208,10 +208,12 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         KTPPembeli = new javax.swing.JComboBox<>();
         KodeMobil = new javax.swing.JComboBox<>();
         TanggalPembelian = new com.toedter.calendar.JDateChooser();
-        lblktp = new javax.swing.JLabel();
-        lblslip = new javax.swing.JLabel();
+        A = new javax.swing.JLabel();
+        B = new javax.swing.JLabel();
         GambarSlip = new javax.swing.JButton();
         GambarKTP = new javax.swing.JButton();
+        lblktp = new javax.swing.JLabel();
+        lblslip = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -325,13 +327,13 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         getContentPane().add(KodeMobil, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 170, 570, -1));
         getContentPane().add(TanggalPembelian, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 230, 570, -1));
 
-        lblktp.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        lblktp.setText("Gambar KTP:");
-        getContentPane().add(lblktp, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 290, 110, 20));
+        A.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        A.setText("Gambar KTP:");
+        getContentPane().add(A, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 330, 110, 20));
 
-        lblslip.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        lblslip.setText("Gambar Slip Gaji:");
-        getContentPane().add(lblslip, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 410, 110, 20));
+        B.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        B.setText("Gambar Slip Gaji:");
+        getContentPane().add(B, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 330, 110, 20));
 
         GambarSlip.setText("Pilih Gambar");
         GambarSlip.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -339,7 +341,7 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
                 GambarSlipMouseClicked(evt);
             }
         });
-        getContentPane().add(GambarSlip, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 410, -1, -1));
+        getContentPane().add(GambarSlip, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 330, -1, -1));
 
         GambarKTP.setText("Pilih Gambar");
         GambarKTP.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -347,7 +349,9 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
                 GambarKTPMouseClicked(evt);
             }
         });
-        getContentPane().add(GambarKTP, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 290, -1, -1));
+        getContentPane().add(GambarKTP, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 330, -1, -1));
+        getContentPane().add(lblktp, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 360, 300, 180));
+        getContentPane().add(lblslip, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 360, 300, 180));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -429,7 +433,7 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         String pathKTP=model.getValueAt(row, 8).toString();
         if(pathKTP !=null && !pathKTP.isEmpty()){
         ImageIcon iconKTP=new ImageIcon(new ImageIcon(pathKTP)
-                .getImage().getScaledInstance(80, 80, java.awt.Image.SCALE_SMOOTH));
+                .getImage().getScaledInstance(150, 150, java.awt.Image.SCALE_SMOOTH));
         lblktp.setIcon(iconKTP);
     }else{
             lblktp.setIcon(null);
@@ -437,7 +441,7 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
         String pathSlip=model.getValueAt(row, 9).toString();
         if(pathSlip !=null && !pathSlip.isEmpty()){
         ImageIcon iconSlip=new ImageIcon(new ImageIcon(pathSlip)
-                .getImage().getScaledInstance(80, 80, java.awt.Image.SCALE_SMOOTH));
+                .getImage().getScaledInstance(150, 150, java.awt.Image.SCALE_SMOOTH));
         lblslip.setIcon(iconSlip);
     }else{
             lblslip.setIcon(null);
@@ -450,7 +454,7 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
             kredit c= new kredit();
             String ktpPath=(pathKTP.isEmpty())?null:simpanFile(pathKTP,"ktp");
             String slipPath=(pathSlip.isEmpty())?null:simpanFile(pathSlip,"slip");
-            this.stat=k.getCon().prepareStatement("update kredit set ktp=?,"+"kode_mobil=?,kode_paket=?,tanggal_kredit=?,bayar_kredit=?,"+"tenor=?,totalcicil=?,gbrktp?,gbrslip=? where kode_kredit=?");
+            this.stat=k.getCon().prepareStatement("update kredit set ktp=?,"+"kode_mobil=?,kode_paket=?,tanggal_kredit=?,bayar_kredit=?,"+"tenor=?,totalcicil=?,gbrktp=?,gbrslip=? where kode_kredit=?");
             stat.setString(1, c.ktp);
             stat.setString(2, c.mobil);
             stat.setString(3, c.paket);
@@ -543,6 +547,8 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel A;
+    private javax.swing.JLabel B;
     private javax.swing.JTextField Bayar;
     private javax.swing.JLabel EditButton;
     private javax.swing.JButton GambarKTP;
