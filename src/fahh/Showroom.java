@@ -18,11 +18,7 @@ public class Showroom {
         Koneksi a=new Koneksi();
         a.connect();
         
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Beranda().setVisible(true);
-            }
-        });
+        new Login().show();
     }
     
 }

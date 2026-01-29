@@ -366,7 +366,7 @@ public class MenuDataBeliKredit extends javax.swing.JFrame {
 
     private void KembaliButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_KembaliButtonMouseClicked
         // TODO add your handling code here:
-        new Beranda().show();
+        new Beranda(1).show();
         this.dispose();
     }//GEN-LAST:event_KembaliButtonMouseClicked
 

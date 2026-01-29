@@ -13,8 +13,26 @@ public class Beranda extends javax.swing.JFrame {
     /**
      * Creates new form Beranda
      */
-    public Beranda() {
+    private int userLevel;
+    public Beranda(int level) {
         initComponents();
+        this.userLevel=level;
+        aturMenu();
+    }
+    public javax.swing.JMenu getDataButton(){
+        return DataButton;
+    }
+    public javax.swing.JMenu getLaporanButton(){
+        return LaporanButton;
+    }
+    private void aturMenu(){
+        if(userLevel==1){
+            LaporanButton.setEnabled(false);
+            DataButton.setEnabled(true);
+        }else if(userLevel==2){
+            LaporanButton.setEnabled(true);
+            DataButton.setEnabled(false);
+        }
     }
 
     /**
@@ -37,7 +55,7 @@ public class Beranda extends javax.swing.JFrame {
         DataBayarCashButton = new javax.swing.JMenuItem();
         DataKredit = new javax.swing.JMenuItem();
         DataBayarCicilan = new javax.swing.JMenuItem();
-        jMenu6 = new javax.swing.JMenu();
+        LaporanButton = new javax.swing.JMenu();
         PenjualanCashButton = new javax.swing.JMenuItem();
         PenjualanKreditButton = new javax.swing.JMenuItem();
         StatusCicilanButton = new javax.swing.JMenuItem();
@@ -54,6 +72,11 @@ public class Beranda extends javax.swing.JFrame {
         getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
         LoginButton.setText("Login");
+        LoginButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                LoginButtonActionPerformed(evt);
+            }
+        });
         jMenuBar2.add(LoginButton);
 
         DataButton.setText("Data");
@@ -108,7 +131,7 @@ public class Beranda extends javax.swing.JFrame {
 
         jMenuBar2.add(DataButton);
 
-        jMenu6.setText("Laporan");
+        LaporanButton.setText("Laporan");
 
         PenjualanCashButton.setText("Penjualan Cash");
         PenjualanCashButton.addActionListener(new java.awt.event.ActionListener() {
@@ -116,7 +139,7 @@ public class Beranda extends javax.swing.JFrame {
                 PenjualanCashButtonActionPerformed(evt);
             }
         });
-        jMenu6.add(PenjualanCashButton);
+        LaporanButton.add(PenjualanCashButton);
 
         PenjualanKreditButton.setText("Penjualan Kredit");
         PenjualanKreditButton.addActionListener(new java.awt.event.ActionListener() {
@@ -124,7 +147,7 @@ public class Beranda extends javax.swing.JFrame {
                 PenjualanKreditButtonActionPerformed(evt);
             }
         });
-        jMenu6.add(PenjualanKreditButton);
+        LaporanButton.add(PenjualanKreditButton);
 
         StatusCicilanButton.setText("Status Cicilan");
         StatusCicilanButton.addActionListener(new java.awt.event.ActionListener() {
@@ -132,9 +155,9 @@ public class Beranda extends javax.swing.JFrame {
                 StatusCicilanButtonActionPerformed(evt);
             }
         });
-        jMenu6.add(StatusCicilanButton);
+        LaporanButton.add(StatusCicilanButton);
 
-        jMenuBar2.add(jMenu6);
+        jMenuBar2.add(LaporanButton);
 
         setJMenuBar(jMenuBar2);
 
@@ -195,6 +218,12 @@ public class Beranda extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_DataBayarCicilanActionPerformed
 
+    private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginButtonActionPerformed
+        // TODO add your handling code here:
+        new Login().show();
+        this.dispose();
+    }//GEN-LAST:event_LoginButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -225,7 +254,7 @@ public class Beranda extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Beranda().setVisible(true);
+                new Beranda(1).setVisible(true);
             }
         });
     }
@@ -238,12 +267,12 @@ public class Beranda extends javax.swing.JFrame {
     private javax.swing.JMenuItem DataMobilButton;
     private javax.swing.JMenuItem DataPaketButton;
     private javax.swing.JMenuItem DataPembeliButton;
+    private javax.swing.JMenu LaporanButton;
     private javax.swing.JMenu LoginButton;
     private javax.swing.JMenuItem PenjualanCashButton;
     private javax.swing.JMenuItem PenjualanKreditButton;
     private javax.swing.JMenuItem StatusCicilanButton;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
